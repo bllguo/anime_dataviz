@@ -69,7 +69,7 @@
         <script src="https://rawgit.com/susielu/d3-annotation/master/d3-annotation.min.js"></script>
         <script src="app.js"></script>
         <script> 
-            d3.csv("clean_anime.csv", function (data) {
+            d3.csv("anime.csv", function (data) {
                 var parseDate = d3.timeParse("%Y-%m-%d");
                 data.forEach(function (d) {
                     d.Start_Date = parseDate(d.Start_Date);
