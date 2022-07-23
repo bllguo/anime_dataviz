@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anime Recommendation Database</title>
+    <link href='https://fonts.googleapis.com/css?family=Lato:300,900' rel='stylesheet' type='text/css'>
+    <style>
+        body{
+           font-family: 'Lato';
+        }
+   
+       :root {
+         --line-chart-color: #607D8B;
+         --annotation-context-color: #546E7A;
+         --annotation-badge-color:white;
+         --annotation-color: #E8336D;
+       }
+   
+        svg {
+           background-color: white;
+           font-family: 'Lato';
+        }
+
+        .annotation text {
+            font-size: .5em;
+        }
+    </style>
+    </head>
+    <a class="internalLink" href="./genres.html"> &lt;&lt;Prev</a>
+    &nbsp;&nbsp;
+    <a class="internalLink" href="./index.html"> Formats</a>
+    &nbsp;&nbsp;
+    <a class="internalLink" href="./rating.html"> Content Ratings</a>
+    &nbsp;&nbsp;
+    <a class="internalLink" href="./genres.html"> Genres</a>
+    &nbsp;&nbsp;
+    <a class="internalLink" href="./genre_hybrids.html" style="background-color: #979ea1;"> Genre Hybridization</a>
+    <body>
+        <h1>Evolution of Anime over Time: Genre Hybridization - </h1>
+        <p id="msg">
+            Anime often span multiple genres at once. For instance, popular anime "Gintama" is part action, part comedy, and merges the world of 
+            historical Edo Japan with a wacky sci-fi universe full of aliens and spaceships. Certainly an eclectic mix! According to this dataset, 
+            the average number of genres per anime is 2.86. Of course this all relies on potentially faulty user-generated labeling; "Gintama" for 
+            example could easily be labeled with far more genres than it is in the dataset, such as "slice-of-life." In all likelihood this figure 
+            is an undercount, which just goes to show the breadth of innovation and wild concepts in animation.<br><br>
+            
+            Within a genre, which other genres are popular to hybridize with also evolves over time. And just like how the popularity of a genre as a 
+            whole can typically be traced to a few breakthrough works - the aforementioned "Captain Tsubasa" and sports for one, or how "Dragon Ball" 
+            (1986) left its mark on shounen - the popularity within a genre of other hybrid genres can also often be linked to seminal releases. One example is 
+            mecha anime "Mobile Suit Gundam" (1979). Prior to its release, the mecha genre was dominated by light-hearted portrayals of giant robots 
+            and their pilots as superheroes. Gundam, in contrast, took a grittier, more serious approach to the genre, by treating mecha as weapons of 
+            war controlled by ordinary soldiers. Its cult success revolutionized mecha anime and ushered in the "Real Robot" sub-genre.<br><br>
+
+            Below we've plotted all anime within the "Historical" genre by air date and MyAnimeList member count (a proxy for its popularity), with 
+            points sized based on user scores (higher scores, larger points). The top 9 hybrid genres within the "Historical" genre are used to 
+            color each point; remaining anime that do not fall into any of the top 9 hybrid genres are listed under "Other." Click the label 
+            of each legend to filter out anime of the corresponding hybrid genre. Hover over individual points to see further details on each anime. 
+            Click and drag to pan, and use the mouse wheel to zoom in and out.<br><br>
+            
+            Note that most anime displayed actually fall under multiple categories, but we cannot color a point with multiple colors, so the rarer 
+            hybrid genre takes precedence for coloring. For example, "Demon Slayer" (2019) falls under "Action" as well as "Supernatural," 
+            but "Supernatural" is a rarer hybrid genre than "Action," so "Demon Slayer" takes the "Supernatural" color. This does not affect the 
+            legend filtering; filtering out "Action" or "Supernatural" will both filter out "Demon Slayer."<br><br>
+
+            Lastly, use the dropdown to look at hybrid genres for genres other than "Historical."
+        </p>
+        <select id="selector"></select>
+        <div id="my_dataviz"></div>
+        <script src="https://d3js.org/d3.v4.js"></script>
+        <script src="https://rawgit.com/susielu/d3-annotation/master/d3-annotation.min.js"></script>
+        <script src="app.js"></script>
+        <script> 
+            d3.csv("clean_anime.csv", function (data) {
+                var parseDate = d3.timeParse("%Y-%m-%d");
+                data.forEach(function (d) {
+                    d.Start_Date = parseDate(d.Start_Date);
+                });
+                genres = getGenres(data, 'All')
+                    .map(function (d) { return d[0]; });
+
+                d3.select("#selector")
+                    .selectAll("options")
+                    .data(genres)
+                    .enter()
+                    .append('option')
+                    .text(function (d) { return d; }) 
+                    .attr("value", function (d) { return d; }) 
+                    .property("selected", function(d) { return d == 'Historical'; });
+                    
+                var a = [
+                    {
+                        note: {
+                            label: "Before the '70s and '80s historical anime was largely aimed at younger audiences. Works like the \"The Rose of Versailles\" (1979), a historical drama set in the French Revolution, challenged that convention as one of the first anime to combine drama and romance with history.",
+                            align: "right",
+                            lineType: "horizontal",
+                            padding: 2,
+                            wrap: 150,
+                        },
+                        className: "Military Romance Drama Shoujo",
+                        data: data.filter(function (d) { return d.MAL_ID == 338; })[0],
+                        dy: -2,
+                        dx: -50,
+                    },
+                    {
+                        note: {
+                            label: "Popular series \"Rurouni Kenshin\" (1996) started a trend with samurai/historical anime. In the years that followed we see the releases of \"Samurai Champloo\" (2004), \"Gintama\" (2006), and \"Stranger: Mukou Hadan\" (2007).",
+                            align: "right",
+                            lineType: "horizontal",
+                            padding: 2,
+                            wrap: 120,
+                        },
+                        className: "Action Adventure Comedy Romance Samurai Shounen Other",
+                        data: data.filter(function (d) { return d.MAL_ID == 45; })[0],
+                        dy: -25,
+                        dx: -25,
+                    },
+                ]
+
+                hybrids = getGenres(data, 'Historical').slice(1, 10).map(function (d) { return d[0]; });
+                draw_scatter(data, div='#my_dataviz', genre='Historical', yax='Members', 
+                    range=[10, 7500000], scale='log', color_group='Genres', options=hybrids, 
+                    annotations=a);
+
+                function update(genre) {
+                    d3.select("svg").remove(); 
+                    hybrids = getGenres(data, genre).slice(1, 10).map(function (d) { return d[0]; });
+                    draw_scatter(data, div='#my_dataviz', genre=genre, yax='Members', 
+                        range=[10, 7500000], scale='log', color_group='Genres', options=hybrids, 
+                        annotations=genre == 'Historical' ? a : []);
+                }
+
+                d3.select("#selector").on("change", function (d) {
+                    update(d3.select(this).property("value"));
+                });
+            });
+
+        </script>
+    </body>
+</html>

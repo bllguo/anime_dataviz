@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anime Recommendation Database</title>
+    <link href='https://fonts.googleapis.com/css?family=Lato:300,900' rel='stylesheet' type='text/css'>
+    <style>
+        body{
+           font-family: 'Lato';
+        }
+   
+       :root {
+         --line-chart-color: #607D8B;
+         --annotation-context-color: #546E7A;
+         --annotation-badge-color:white;
+         --annotation-color: #E8336D;
+       }
+   
+        svg {
+           background-color: white;
+           font-family: 'Lato';
+        }
+
+        .annotation text {
+            font-size: .5em;
+        }
+
+        .annotation.vert path {
+            stroke-dasharray: 1,3;
+        }
+    </style>
+    </head>
+    <a class="internalLink" href="./rating.html"> &lt;&lt;Prev</a>
+    &nbsp;&nbsp;
+    <a class="internalLink" href="./index.html"> Formats</a>
+    &nbsp;&nbsp;
+    <a class="internalLink" href="./rating.html"> Content Ratings</a>
+    &nbsp;&nbsp;
+    <a class="internalLink" href="./genres.html" style="background-color: #979ea1;"> Genres</a>
+    &nbsp;&nbsp;
+    <a class="internalLink" href="./genre_hybrids.html"> Genre Hybridization</a>
+    &nbsp;&nbsp;
+    <a class="internalLink" href="./genre_hybrids.html"> Next&gt;&gt;</a>
+    <body>
+        <h1>Evolution of Anime over Time: Genres</h1>
+        <p id="msg">
+            The breadth of subjects and themes in anime is undoubtedly one of its strengths. Animes span varied genres from dramatic epics on 
+            war and politics to lighthearted comedies about daily life, from complex concepts like time travel and the paranormal to seemingly
+            menial ones like sports and high school. <br><br>
+            
+            While some genres remain mainstays of the industry regardless of the times, such as comedy and action, others come in (and out of) 
+            vogue constantly. As with many things, it often takes a few visionaries to break ground in a new genre for it to have a chance of going 
+            mainstream. For example, while sports animes have had a strong presence even since the '60s and '70s with works like "Speed Racer" 
+            (1967) and "Ashita no Joe" (1970), it was the release of "Captain Tsubasa" in 1983 that really propelled the genre to new heights. In fact, 
+            "Captain Tsubasa" had such a cultural impact it is credited with popularizing association football as a whole in Japan, and was named by 
+            Zinedine Zidane and Lionel Messi for inspiring them to take up the sport.<br><br>
+
+            Another influence that should be noted is the rise of the internet, which made it easier to audiences to express demand and discover niche 
+            genres, and also for creators to more easily distribute their work. It comes as no surprise that the number of animes in less popular 
+            genres like school and music exploded in the 2000s, in part due to this effect. <br><br>
+
+            Below we plotted the number of anime released in each genre over time, with each color representing a different genre. The areas are ordered 
+            by the total number of animes ever released in that genre, with the most popular genres at the bottom. Hover over individual areas to 
+            identify the genre and view other details.<br><br>
+        </p>
+        <div id="my_dataviz"></div>
+        <script src="https://d3js.org/d3.v4.js"></script>
+        <script src="https://rawgit.com/susielu/d3-annotation/master/d3-annotation.min.js"></script>
+        <script src="app.js"></script>
+        <script> 
+
+            d3.csv("genres.csv", function (data) {
+                var sumstat = d3.nest()
+                    .key(function (d) { return d.Start_Year; })
+                    .entries(data)
+
+                var stacked = d3.stack()
+                    .keys(rng(0, 44))
+                    .value(function (d, key) {
+                        return d.values[key].count; 
+                    })
+                    .order(d3.stackOrderDescending)
+                    (sumstat)
+
+                var annotations = [
+                    {
+                        note: {
+                            label: "The popularity of the school genre of anime takes many Western viewers by surprise. It is explained by 1. the near-universal relatability of the setting and 2. the greater importance and nostalgia placed on high school in Japanese culture. The genre really took off in the latter half of the 2000s, with the release of titans \"Code Geass\" (2006), \"Clannad\" (2007), and \"Toradora!\" (2008).",
+                            align: "right",
+                            lineType: "horizontal",
+                            padding: 2,
+                            wrap: 200,
+                        },
+                        data: stacked.filter(function (d) { 
+                            return d.key == 1; 
+                        })[0][89],
+                        dx: -150,
+                        dy: -25,
+                    },
+                    {
+                        note: {
+                            label: "The music genre, which tends to overlap with the school and slice-of-life genres, also exploded in popularity in the later 2000s on the backs of \"Nana\" (2006) and \"K-On!\" (2009).",
+                            align: "right",
+                            lineType: "horizontal",
+                            padding: 2,
+                            wrap: 200,
+                        },
+                        data: stacked.filter(function (d) { 
+                            return d.key == 6; 
+                        })[0][92],
+                        dx: -225,
+                        dy: 15,
+                    },
+                    {
+                        note: {
+                            label: "Note that since anime can fall under multiple genres, the total count over all genres for a given year is far greater than the total number of anime released that year. \"Shingeki no Kyojin\" (2013), for instance, contributes to the counts of \"Action,\" \"Fantasy,\" and \"Shounen.\"",
+                            align: "right",
+                            lineType: "vertical",
+                            padding: 2,
+                            wrap: 200,
+                        },
+                        disable: ['connector', 'subject'],
+                        nx: 25,
+                        ny: 375,
+                    },
+                    {
+                        note: {
+                            label: "The 1980s marked the \"golden age of anime\" with the success of \"Mobile Suit Gundam\" (1979) and \"Space Battleship Yamato\" (1980). The number of anime released clearly skyrocketed during this time.",
+                            align: "left",
+                            lineType: "vertical",
+                            padding: 2,
+                            wrap: 125,
+                        },
+                        className: "vert",
+                        data: stacked.filter(function (d) { 
+                            return d.key == 0; 
+                        })[0][63],
+                        nx: 0,
+                        dy: -350,
+                    },
+                    {
+                        note: {
+                            label: "The 2000s ushered in the digital age, leading to greater experimentation in anime including in different genres. Perhaps one day it too will be referred to as a \"golden age.\"",
+                            align: "left",
+                            lineType: "vertical",
+                            padding: 2,
+                            wrap: 125,
+                        },
+                        className: "vert",
+                        data: stacked.filter(function (d) { 
+                            return d.key == 0; 
+                        })[0][83],
+                        nx: 0,
+                        dy: -250,
+                    },
+                ]
+
+                draw_area(stacked, div='#my_dataviz', range=[0, 3000], annotations=annotations);
+            });
+
+
+        </script>
+    </body>
+</html>

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anime Recommendation Database</title>
+    <link href='https://fonts.googleapis.com/css?family=Lato:300,900' rel='stylesheet' type='text/css'>
+    <style>
+        body{
+           font-family: 'Lato';
+        }
+   
+       :root {
+         --line-chart-color: #607D8B;
+         --annotation-context-color: #546E7A;
+         --annotation-badge-color:white;
+         --annotation-color: #E8336D;
+       }
+   
+        svg {
+           background-color: white;
+           font-family: 'Lato';
+        }
+
+        .annotation text {
+            font-size: .5em;
+        }
+    </style>
+    </head>
+    <a class="internalLink" href="./index.html"> &lt;&lt;Prev</a>
+    &nbsp;&nbsp;
+    <a class="internalLink" href="./index.html"> Formats</a>
+    &nbsp;&nbsp;
+    <a class="internalLink" href="./rating.html" style="background-color: #979ea1;"> Content Ratings</a>
+    &nbsp;&nbsp;
+    <a class="internalLink" href="./genres.html"> Genres</a>
+    &nbsp;&nbsp;
+    <a class="internalLink" href="./genre_hybrids.html"> Genre Hybridization</a>
+    &nbsp;&nbsp;
+    <a class="internalLink" href="./genres.html"> Next&gt;&gt;</a>
+    <body>
+        <h1>Evolution of Anime over Time: Content Ratings</h1>
+        <p id="msg">
+            Even today, animation is often still associated with youth, especially in the Western world. Though indeed most animation
+            has been produced for children and teens, this is an incorrect perception, as many animated works have been and 
+            continue to be produced targeting adult audiences. Anime films such as "Akira" (1988) and "Ghost in the Shell" (1995) are pivotal 
+            works in animation praised for their artistic value and handling of mature themes. <br><br>
+
+            The history of adult animation in Japan stretches further back than "Akira." One of the first successful attempts at introducing 
+            a darker tone to anime came in the form of "Lupin III" in 1971, an action comedy inspired by French novelist Maurice Leblanc's 
+            fictional gentleman thief, Arsene Lupin. Despite being groundbreaking in bringing adult themes to anime, it is actually more 
+            light-hearted than its source material. <br><br>
+
+            Anime has also not shied away from sexual themes. Erotic anime are known in English as "hentai," while in Japan they are more commonly
+            referred to as R-18 anime. The first animated films to be rated R-18 in Japan were in the early '70s, but were commercial flops that 
+            put a halt to further development in the genre until "Lolita Anime" and "Cream Lemon" in 1984, the latter of which found cult success.
+            <br><br>
+
+            Below we've plotted all anime up to 2021 in MyAnimeList by air date and MyAnimeList member count (a proxy for its popularity), with 
+            points colored by content rating and sized based on user scores (higher scores, larger points). Click each label of the legend to toggle 
+            the visibility of the corresponding rating. Hover over individual points to see further details on each anime. Click and drag to pan, 
+            and use the mouse wheel to zoom in and out.
+
+        </p>
+        <div id="my_dataviz"></div>
+        <script src="https://d3js.org/d3.v4.js"></script>
+        <script src="https://rawgit.com/susielu/d3-annotation/master/d3-annotation.min.js"></script>
+        <script src="app.js"></script>
+        <script> 
+            d3.csv("clean_anime.csv", function (data) {
+                var parseDate = d3.timeParse("%Y-%m-%d");
+                data.forEach(function (d) {
+                    d.Start_Date = parseDate(d.Start_Date);
+                });
+
+                var annotations = [
+                    {
+                        note: {
+                            label: "\"Lupin III\" (1971), an adaptation of the eponymous manga that first appeared in 1967, is notable for being one of the earliest attempts at introducing adult themes to anime. The franchise found immediate, lasting success spanning to modern day.",
+                            align: "right",
+                            lineType: "horizontal",
+                            padding: 2,
+                            wrap: 200,
+                        },
+                        className: "PG-13",
+                        data: data.filter(function (d) { return d.MAL_ID == 1412; })[0],
+                        dy: 10,
+                        dx: -50,
+                    },
+                    {
+                        note: {
+                            label: "Cyberpunk film \"Akira\" (1988) quickly found an international cult following after its US release in 1989. Noted for its violence, adult themes, and striking visuals, it is recognized as a landmark film in both the cyberpunk genre and anime as a whole. Today it remains not only one of the the most critically acclaimed animated films of all time, but one of the giants of all sci-fi as well.",
+                            align: "right",
+                            lineType: "horizontal",
+                            padding: 2,
+                            wrap: 250,
+                        },
+                        className: "Rplus",
+                        data: data.filter(function (d) { return d.MAL_ID == 47; })[0],
+                        dy: -10,
+                        dx: -50,
+                    },
+                    {
+                        note: {
+                            label: "\"Cream Lemon\" (1984) was the second hentai OVA. While predated by \"Lolicon Anime\" by a few months, it found more commercial success than it's notoriously controversial predecessor.",
+                            align: "right",
+                            lineType: "horizontal",
+                            padding: 2,
+                            wrap: 150,
+                        },
+                        className: "Rx",
+                        data: data.filter(function (d) { return d.MAL_ID == 4813; })[0],
+                        dy: 100,
+                        dx: -250,
+                    },
+                    {
+                        note: {
+                            label: "Looking at content ratings over time, it is easy to see why animation is largely associated with children. From the beginning most works have been aimed at all ages; by the '60s we see more anime for teens. Adult anime only gained a strong foothold in the '80s, and remains highly outnumbered.",
+                            align: "right",
+                            lineType: "vertical",
+                            padding: 2,
+                            wrap: 175,
+                        },
+                        disable: ['connector', 'subject'],
+                        nx: 25,
+                        ny: 190,
+                    },
+                ]
+                draw_scatter(data, div='#my_dataviz', genre='All', yax='Members', 
+                    range=[10, 7500000], scale='log', color_group='Rating', options=[], 
+                    annotations=annotations);
+            });
+
+
+        </script>
+    </body>
+</html>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anime Recommendation Database</title>
+    <link href='https://fonts.googleapis.com/css?family=Lato:300,900' rel='stylesheet' type='text/css'>
+    <style>
+        body{
+           font-family: 'Lato';
+        }
+   
+       :root {
+         --line-chart-color: #607D8B;
+         --annotation-context-color: #546E7A;
+         --annotation-badge-color:white;
+         --annotation-color: #E8336D;
+       }
+   
+        svg {
+           background-color: white;
+           font-family: 'Lato';
+        }
+
+        .annotation text {
+            font-size: .5em;
+        }
+    </style>
+    </head>
+    <a class="internalLink" href="./index.html" style="background-color: #979ea1;"> Formats</a>
+    &nbsp;&nbsp;
+    <a class="internalLink" href="./rating.html"> Content Ratings</a>
+    &nbsp;&nbsp;
+    <a class="internalLink" href="./genres.html"> Genres</a>
+    &nbsp;&nbsp;
+    <a class="internalLink" href="./genre_hybrids.html"> Genre Hybridization</a>
+    &nbsp;&nbsp;
+    <a class="internalLink" href="./rating.html"> Next&gt;&gt;</a>
+    <body>
+        <h1>Evolution of Anime over Time: Formats</h1>
+        <p id="msg">Japanese animation, or anime, is today a worldwide phenomenon and arguably Japan's leading cultural export. The roots of anime 
+            can be traced to films from the early 1900s, but even in Japan it did not reach mainstream popularity until the '80s, after a formative
+            period that defined anime's modern conventions starting in the '60s. Anime exploded into the Western world in the '90s, and has seen a 
+            meteoric rise since.<br><br>
+
+            Over this period, anime evolved in many different ways, such as format (TV, film, etc.), genre, target audience, and source material.
+            <a href="https://www.kaggle.com/datasets/hernan4444/anime-recommendation-database-2020">Using data scraped from MyAnimeList</a>, an online 
+            community of anime fans, we will explore some of these dimensions over the history of anime.<br><br>
+
+            One area of innovation in anime has been in format and delivery. While anime started off as movies, they expanded to serialized TV 
+            shows in the '60s, led by the popularity of "Astro Boy" in 1963. As demand for anime surged in the 80s and VCRs became commonplace, viewers 
+            became willing to buy anime directly from video stores, prompting the rise of original video animations (OVA), which are movies or series 
+            released direct-to-video. Noteworthy OVA during this time include the first official OVA release in "Dallos" and commercial hit "Megazone 23." 
+            Beginning as standalone releases, today OVA are also released as side stories or exclusive episodes for existing TV anime, or piecemeal as 
+            multi-part OVA.<br><br>
+            
+            With the arrival of the internet, anime expanded to all kinds of other media such as music videos, original net animations (ONA - anime 
+            released first on the Web), and video games. ONA began as an accessible format for fan works or independent projects without studio backing,
+            but gained more mainstream appeal when major studio AIC released "Mahou Yuugi" on the internet before TV.<br><br>
+
+            Below we've plotted all anime up to 2021 in MyAnimeList by air date and MyAnimeList member count (a proxy for its popularity), with 
+            points colored by anime type and sized based on user scores (higher scores, larger points). Click each label of the legend to toggle 
+            the visibility of the corresponding rating. Hover over individual points to see further details on each anime. Click and drag to pan, 
+            and use the mouse wheel to zoom in and out.
+        </p>
+        <div id="my_dataviz"></div>
+        <script src="https://d3js.org/d3.v4.js"></script>
+        <script src="https://rawgit.com/susielu/d3-annotation/master/d3-annotation.min.js"></script>
+        <script src="app.js"></script>
+        <script> 
+            d3.csv("clean_anime.csv", function (data) {
+                var parseDate = d3.timeParse("%Y-%m-%d");
+                data.forEach(function (d) {
+                    d.Start_Date = parseDate(d.Start_Date);
+                });
+
+                var annotations = [
+                    {
+                        note: {
+                            label: "While anime was by no means a stranger to film, the release of \"Spirited Away\" (2001) brought Western interest in Japanese animation to new heights, and further elevated animation as a recognized art form.",
+                            align: "right",
+                            lineType: "horizontal",
+                            padding: 2,
+                            wrap: 120,
+                        },
+                        className: "Movie",
+                        data: data.filter(function (d) { return d.MAL_ID == 199; })[0],
+                        dy: -2,
+                        dx: -50,
+                    },
+                    {
+                        note: {
+                            label: "\"Megazone 23\" is a cyberpunk OVA that was one of the first major successes of the format. Originally intended as a TV series, it was changed to OVA after the producers lost their financial backing.",
+                            align: "right",
+                            lineType: "horizontal",
+                            padding: 2,
+                            wrap: 200,
+                        },
+                        className: "OVA",
+                        data: data.filter(function (d) { return d.MAL_ID == 1935; })[0],
+                        dy: -15,
+                        dx: -150,
+                    },
+                    {
+                        note: {
+                            label: "Sci-fi manga \"Astro Boy\"'s anime adaptation premiered in 1963. Widely recognized as the first popular animated Japanese TV series, it is a formative work that shaped the modern aesthetics of anime.",
+                            align: "right",
+                            lineType: "horizontal",
+                            padding: 2,
+                            wrap: 200,
+                        },
+                        className: "TV",
+                        data: data.filter(function (d) { return d.MAL_ID == 2747; })[0],
+                        dy: 5,
+                        dx: -20,
+                    },
+                    {
+                        note: {
+                            label: "Film \"Macross: Do You Remember Love?\" (1984) did not introduce a new format, but it was one of the first anime to have a song top the charts, with theme song \"Ai Oboete Imasu ka\" peaking at No. 7 in Japan. This achievement spurred the industry to place greater emphasis on music in anime.",
+                            align: "right",
+                            lineType: "horizontal",
+                            padding: 2,
+                            wrap: 200,
+                        },
+                        className: "Movie",
+                        data: data.filter(function (d) { return d.MAL_ID == 1089; })[0],
+                        dy: -50,
+                        dx: -50,
+                    },
+                    {
+                        note: {
+                            label: "\"Mahou Yuugi\" (2001) is notable for being the first ONA released by a major studio.",
+                            align: "right",
+                            lineType: "horizontal",
+                            padding: 2,
+                            wrap: 200,
+                        },
+                        className: "ONA",
+                        data: data.filter(function (d) { return d.MAL_ID == 2277; })[0],
+                        dy: 175,
+                        dx: -100,
+                    },
+                    {
+                        note: {
+                            label: "Anime began as films, but expanded to all kinds of different media as it evolved, starting from TV series in the '60s and OVA (original video animation) in the '70s and '80s. With the rise of the Internet, anime music videos took off, and studios also began to release directly to the Web (original net animations, or ONA).",
+                            align: "right",
+                            padding: 2,
+                            lineType: "vertical",
+                            wrap: 250,
+                        },
+                        nx: 50,
+                        ny: 400,
+                        disable: ["connector", "subject"],
+                    },
+                ]
+                draw_scatter(data, div='#my_dataviz', genre='All', yax='Members', 
+                    range=[10, 7500000], scale='log', color_group='Type', options=[], 
+                    annotations=annotations);
+            });
+
+        </script>
+    </body>
+</html>
