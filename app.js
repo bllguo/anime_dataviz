@@ -273,7 +273,7 @@ range=[20, 7500000], scale='linear', color_group='Type', options=[], annotations
     svg.append("text")             
         .attr("transform",
               "translate(" + (width/2) + " ," + 
-                             (height + margin.top + 20) + ")")
+                             (height + margin.top - 5) + ")")
         .style("text-anchor", "middle")
         .text("Airing Year");
 
@@ -426,7 +426,7 @@ function draw_area(data, div='#my_dataviz', range=[0, 3000], annotations=[]) {
     svg.append("text")             
         .attr("transform",
               "translate(" + (width/2) + " ," + 
-                             (height + margin.top + 20) + ")")
+                             (height + margin.top - 5) + ")")
         .style("text-anchor", "middle")
         .text("Airing Year");
     
