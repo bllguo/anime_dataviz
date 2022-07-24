@@ -46,9 +46,9 @@ function getOptions(a, b) {
 
 function draw_scatter(data, div='#my_dataviz', genre='All', yax='Members', 
 range=[20, 7500000], scale='linear', color_group='Type', options=[], annotations=[]) {
-    var margin = { top: 10, right: 30, bottom: 50, left: 60 },
+    var margin = { top: 50, right: 30, bottom: 50, left: 60 },
         width = 1000 - margin.left - margin.right,
-        height = 520 - margin.top - margin.bottom;
+        height = 560 - margin.top - margin.bottom;
 
     var svg = d3.select(div)
         .append("svg")
@@ -289,6 +289,15 @@ range=[20, 7500000], scale='linear', color_group='Type', options=[], annotations
     svg.append("g")
         .attr("class", "annotations")
         .call(makeAnnotations)
+
+    // title
+    svg.append("text")
+        .attr("x", (width / 2))             
+        .attr("y", 0 - (margin.top / 2))
+        .attr("text-anchor", "middle")  
+        .style("font-size", "16px") 
+        .style("text-decoration", "underline")  
+        .text("Anime Releases by Member Count, grouped by " + color_group);
 }
 
 function rng(start, end) {
@@ -305,9 +314,9 @@ function rng(start, end) {
 }
 
 function draw_area(data, div='#my_dataviz', range=[0, 3000], annotations=[]) {
-    var margin = { top: 10, right: 30, bottom: 50, left: 60 },
+    var margin = { top: 50, right: 30, bottom: 50, left: 60 },
         width = 1000 - margin.left - margin.right,
-        height = 520 - margin.top - margin.bottom;
+        height = 560 - margin.top - margin.bottom;
 
     var svg = d3.select(div)
         .append("svg")
@@ -434,4 +443,13 @@ function draw_area(data, div='#my_dataviz', range=[0, 3000], annotations=[]) {
     svg.append("g")
         .attr("class", "annotations")
         .call(makeAnnotations)
+
+    // title
+    svg.append("text")
+        .attr("x", (width / 2))             
+        .attr("y", 0 - (margin.top / 2))
+        .attr("text-anchor", "middle")  
+        .style("font-size", "16px") 
+        .style("text-decoration", "underline")  
+        .text("Number of Anime Released over Time by Genre");
 }
